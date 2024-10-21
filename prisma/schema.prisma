@@ -1,0 +1,115 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model Room {
+  UUID         String      @id @default(uuid())
+  Lifetime     DateTime
+  userIsPublic Boolean     @default(false)
+  User         User[]
+  TypeConsulted TypeConsulted[]
+}
+
+model User {
+  UUID        String      @id @default(uuid())
+  Username    String
+  Password    String
+  Email       String      @unique
+  Room        Room?       @relation(fields: [roomId], references: [UUID])
+  roomId      String?
+  Feedback    Feedback[]
+  Codes       Codes[]
+  Note        Note[]
+}
+
+model Codes {
+  UUID        String      @id @default(uuid())
+  Code        String
+  isActivated Boolean     @default(false)
+  User        User        @relation(fields: [userId], references: [UUID])
+  userId      String
+}
+
+model Feedback {
+  UUID        String      @id @default(uuid())
+  Message     String
+  Valoration  Int
+  User        User        @relation(fields: [userId], references: [UUID])
+  userId      String
+}
+
+model Psychiatrist {
+  UUID         String      @id @default(uuid())
+  Username     String
+  Password     String
+  Certify      Boolean     @default(false)
+  Presentation String      // Representa un enlace a un video o imágenes
+  Description  String
+  Specialization Specialization[]
+}
+
+model Coach {
+  UUID         String      @id @default(uuid())
+  Username     String
+  Password     String
+  Certify      Boolean     @default(false)
+  Presentation String      // Representa un enlace a un video o imágenes
+  Description  String
+  Specialization Specialization[]
+}
+
+model Consultor {
+  UUID         String      @id @default(uuid())
+  Username     String
+  Password     String
+  Certify      Boolean     @default(false)
+  Presentation String      // Representa un enlace a un video o imágenes
+  Description  String
+  Specialization Specialization[]
+}
+
+model Specialization {
+  UUID        String        @id @default(uuid())
+  name        String
+  Psychiatrist Psychiatrist[]
+  Coach        Coach[]
+  Consultor    Consultor[]
+}
+
+model TypeConsulted {
+  UUID          String      @id @default(uuid())
+  IDConsulted   String      // Puede ser el ID de un psychiatrist, coach o consultor
+  Room          Room        @relation(fields: [roomId], references: [UUID])
+  roomId        String
+  Note          Note[]
+}
+
+model Note {
+  UUID        String      @id @default(uuid())
+  Consulted   TypeConsulted @relation(fields: [consultedId], references: [UUID])
+  consultedId String
+  User        User        @relation(fields: [userId], references: [UUID])
+  userId      String
+  Title       String
+  Content     String
+}
+
+model Stats {
+  UUID        String      @id @default(uuid())
+  RoomQuantity Int
+}
