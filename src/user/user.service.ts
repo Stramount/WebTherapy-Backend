@@ -12,7 +12,10 @@ export class UserService{
             return this.prisma.user.findMany()
         }
 
-        async getUserById(){
+        async getUserById(UUID: string): Promise<User>{
+            return this.prisma.user.findUnique({
+                where: {UUID}
+            })
 
         }
 
@@ -22,7 +25,18 @@ export class UserService{
             })
         }
 
-        async updateUser(){}
+        async updateUser(UUID: string, data: User): Promise<User>{
+            return this.prisma.user.update({
+                where: {
+                    UUID
+                },
+                data       
+            })
+        }
 
-        async deleteUser(){}
+        async deleteUser(UUID: string): Promise<User>{
+            return this.prisma.user.delete({
+                where: {UUID}
+            })
+        }
 }
